@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using AdvertisingAgencyProject.Models;
 
 namespace AdvertisingAgencyProject.Controllers
 {
+    [Authorize(Roles = "Manager,Admin")]
     public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;

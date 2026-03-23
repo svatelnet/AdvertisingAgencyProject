@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using AdvertisingAgencyProject.Data;
+using AdvertisingAgencyProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AdvertisingAgencyProject.Data;
-using AdvertisingAgencyProject.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AdvertisingAgencyProject.Controllers
 {
+    [Authorize(Roles = "Manager,Admin")]
     public class AdCategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;

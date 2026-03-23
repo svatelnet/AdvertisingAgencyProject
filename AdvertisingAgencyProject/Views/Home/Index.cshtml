@@ -1,8 +1,105 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Главная";
+
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var isAdmin = User.IsInRole("Admin");
+    var isManager = User.IsInRole("Manager");
+    var isClient = User.IsInRole("Client");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-5">Информационно-программная система «Рекламное агентство»</h1>
+    <p class="lead">
+        Автоматизация работы рекламного агентства: администратор управляет менеджерами,
+        менеджеры ведут справочники и оформляют заказы, клиенты подают заявки и отслеживают их статус,
+        а система автоматически снимает рекламу по окончании акции.
+    </p>
+</div>
+
+@if (!isAuthenticated)
+{
+    <div class="alert alert-info">
+        Для работы с системой выполните вход. Клиенты регистрируются самостоятельно, менеджеров создает администратор.
+    </div>
+}
+
+<div class="row g-4">
+    @if (isManager || isAdmin)
+    {
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h5">Справочник клиентов</h3>
+                    <p class="card-text">Добавление, редактирование и просмотр клиентской базы.</p>
+                    <a class="btn btn-primary" asp-controller="Clients" asp-action="Index">Открыть</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h5">Категории рекламы</h3>
+                    <p class="card-text">Ведение справочника рекламных категорий и базовых цен.</p>
+                    <a class="btn btn-primary" asp-controller="AdCategories" asp-action="Index">Открыть</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h5">Заказы на рекламу</h3>
+                    <p class="card-text">Обработка заявок клиентов, подтверждение и контроль размещения рекламы.</p>
+                    <a class="btn btn-primary" asp-controller="AdOrders" asp-action="Index">Открыть</a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isAdmin)
+    {
+        <div class="col-md-4">
+            <div class="card h-100 border-warning shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h5">Справочник менеджеров</h3>
+                    <p class="card-text">Администратор создает менеджеров и управляет их ролями.</p>
+                    <a class="btn btn-warning" asp-controller="Users" asp-action="Index">Открыть</a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isClient)
+    {
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h5">Личный кабинет</h3>
+                    <p class="card-text">Просмотр профиля клиента и основной информации по аккаунту.</p>
+                    <a class="btn btn-primary" asp-controller="ClientCabinet" asp-action="Index">Открыть</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h5">Мои заявки</h3>
+                    <p class="card-text">Контроль своих заявок, стоимости, сроков и статусов размещения.</p>
+                    <a class="btn btn-primary" asp-controller="ClientCabinet" asp-action="Orders">Открыть</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-success">
+                <div class="card-body">
+                    <h3 class="card-title h5">Новая заявка</h3>
+                    <p class="card-text">Клиент может сам отправить заявку на размещение рекламы.</p>
+                    <a class="btn btn-success" asp-controller="ClientCabinet" asp-action="CreateRequest">Создать</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>

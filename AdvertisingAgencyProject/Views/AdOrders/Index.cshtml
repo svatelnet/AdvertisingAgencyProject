@@ -1,84 +1,67 @@
-﻿@model IEnumerable<AdvertisingAgencyProject.Models.AdOrder>
+﻿@using AdvertisingAgencyProject.Models
+@using AdvertisingAgencyProject.Services
+@model IEnumerable<AdvertisingAgencyProject.Models.AdOrder>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Заказы на рекламу";
 }
 
-<h1>Index</h1>
+<h1>Заказы на рекламу</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Оформить заказ</a>
 </p>
-<table class="table">
+
+<table class="table table-striped align-middle">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Client)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AdCategory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
+            <th>Клиент</th>
+            <th>Категория</th>
+            <th>Название</th>
+            <th>Период размещения</th>
+            <th>Стоимость</th>
+            <th>Статус</th>
+            <th>Активна</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AdCategory.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                <a asp-action="Complete" asp-route-id="@item.Id">Завершить</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Client?.FullName</td>
+                <td>@item.AdCategory?.Name</td>
+                <td>@item.Title</td>
+                <td>@item.StartDate.ToString("dd.MM.yyyy") - @item.EndDate.ToString("dd.MM.yyyy")</td>
+                <td>@item.TotalPrice.ToString("0.00")</td>
+                <td>
+                    <span class="badge @AdOrderWorkflowService.ToBadgeClass(item.Status)">
+                        @AdOrderWorkflowService.ToDisplayText(item.Status)
+                    </span>
+                </td>
+                <td>@(item.IsActive ? "Да" : "Нет")</td>
+                <td class="text-nowrap">
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Изменить</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Подробнее</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Удалить</a>
+
+                    @if (item.Status == OrderStatus.Submitted)
+                    {
+                        <form asp-action="Approve" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-success">Подтвердить</button>
+                        </form>
+                    }
+
+                    @if (item.Status == OrderStatus.Active || item.Status == OrderStatus.Approved)
+                    {
+                        <form asp-action="Complete" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-warning">Снять с размещения</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

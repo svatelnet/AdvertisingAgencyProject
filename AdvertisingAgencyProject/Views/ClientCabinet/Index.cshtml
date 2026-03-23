@@ -1,0 +1,94 @@
+﻿@using AdvertisingAgencyProject.Services
+@model AdvertisingAgencyProject.ViewModels.ClientDashboardViewModel
+
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Личный кабинет клиента</h1>
+    <div>
+        <a asp-action="EditProfile" class="btn btn-outline-primary">Редактировать профиль</a>
+        <a asp-action="CreateRequest" class="btn btn-success">Новая заявка</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Профиль</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Имя</dt>
+                    <dd class="col-sm-8">@Model.Client.FullName</dd>
+
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.Client.Email</dd>
+
+                    <dt class="col-sm-4">Телефон</dt>
+                    <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.Client.Phone) ? Model.Client.Phone : "—")</dd>
+
+                    <dt class="col-sm-4">Компания</dt>
+                    <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.Client.CompanyName) ? Model.Client.CompanyName : "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Последние заявки</h5>
+                    <a asp-action="Orders" class="btn btn-sm btn-outline-secondary">Все заявки</a>
+                </div>
+
+                @if (Model.RecentOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Категория</th>
+                                    <th>Период</th>
+                                    <th>Статус</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>@order.Title</td>
+                                        <td>@order.AdCategory?.Name</td>
+                                        <td>@order.StartDate.ToString("dd.MM.yyyy") - @order.EndDate.ToString("dd.MM.yyyy")</td>
+                                        <td>
+                                            <span class="badge @AdOrderWorkflowService.ToBadgeClass(order.Status)">
+                                                @AdOrderWorkflowService.ToDisplayText(order.Status)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        У вас пока нет заявок на размещение рекламы.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<AdvertisingAgencyProject.ViewModels.UserWithRolesViewModel>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Пользователи";
+}
+
+<h1>Пользователи</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    <a asp-action="CreateManager" class="btn btn-primary">Создать менеджера</a>
+</p>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Логин</th>
+            <th>Текущая роль</th>
+            <th>Назначить роль</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var selectedRole = string.IsNullOrWhiteSpace(item.CurrentRole) ? "Client" : item.CurrentRole;
+
+            var roleOptions = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Администратор", Value = "Admin", Selected = selectedRole == "Admin" },
+                new SelectListItem { Text = "Менеджер", Value = "Manager", Selected = selectedRole == "Manager" },
+                new SelectListItem { Text = "Клиент", Value = "Client", Selected = selectedRole == "Client" }
+            };
+
+            <tr>
+                <td>@item.Email</td>
+                <td>@item.UserName</td>
+                <td>
+                    @if (item.Roles.Count == 0)
+                    {
+                        <span class="text-danger">Роль не назначена</span>
+                    }
+                    else if (item.Roles.Count == 1)
+                    {
+                        @item.CurrentRole
+                    }
+                    else
+                    {
+                        <div class="text-warning fw-semibold">
+                            Несколько ролей: @string.Join(", ", item.Roles)
+                        </div>
+                        <div class="text-muted small">
+                            Выберите одну роль и нажмите «Сохранить»
+                        </div>
+                    }
+                </td>
+                <td>
+                    <form asp-action="UpdateRole" asp-route-id="@item.Id" method="post" class="d-flex gap-2 align-items-center">
+                        @Html.AntiForgeryToken()
+                        <select name="role" asp-items="roleOptions" class="form-select form-select-sm" style="max-width: 220px;"></select>
+                        <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
