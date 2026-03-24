@@ -1,0 +1,18 @@
+services:
+  advertising-agency:
+    container_name: advertising-agency
+    build:
+      context: .
+      dockerfile: AdvertisingAgencyProject/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Data Source=/app/data/AdvertisingAgency.db
+    volumes:
+      - advertising_agency_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  advertising_agency_data:
